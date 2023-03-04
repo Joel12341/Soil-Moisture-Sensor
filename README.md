@@ -1,2 +1,3 @@
 # Soil-Moisture-Sensor
 Soil Moisture Sensor for Raspberry Pi 3 using a MCP 3200 Microcontroller
+This was a part of a Life Science project for my Enviromental Science course, I borrow most of the elements from avimesa Sensor Calibration script located here:https://www.avimesa.com/docs/dev-kits/connecting-analog-sensors-raspberry-pi/. The main reason I created this script was due to not being able to access avimesa API services. Be no means is this a comprehansive script, I took elements that I needed for my project and modified it to the avimesa script with my limited understanding of Python, feel free to do whatever you want to the progam.
