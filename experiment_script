@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+import csv
+from time import sleep
+from gpiozero import MCP3002, DigitalOutputDevice
+from datetime import datetime
+
+def get_soil_moisture():
+    adc = MCP3002(channel=0) # SPI wrapper for ADC chip
+    r_val = []
+    for i in range(10):      # 10 readings 5 milliseconds apart
+        sleep(.005)
+        r_val.append(adc.value)
+    adc.close()
+    return r_val[4]          # median reading
+
+sensor_power = DigitalOutputDevice(17) #GPIO PIN ON PI
+dry_soil = 0.533799 #Dryness of the soil.
+
+with open('experiment_output.csv', 'a') as topic_writer: #Saving the results to a precreated .csv file
+    fieldnames = ['Date/Time', 'Mosture Reading']
+    writing = csv.writer(topic_writer)
+    writing.writerow(fieldnames)
+
+while True:
+    try:
+        sensor_power.on()
+        sleep(2) #allowing the sensor to settle
+        raw_sense_read = get_soil_moisture()
+        timestamp = datetime.now()
+
+        if raw_sense_read >= dry_soil:
+            with open('experiment_output.csv', 'a') as data_writer:
+                contents = [str(timestamp), raw_sense_read]
+                writer = csv.writer(data_writer)
+                writer.writerow(contents)
+                sleep(7200)
+        else:
+            with open('experiment_output.csv', 'a') as final_data_writer:
+                final_content = [str(timestamp), raw_sense_read]
+                writer = csv.writer(final_data_writer)
+                writer.writerow(final_content)
+                sensor_power.off()
+            break
+    except KeyboardInterrupt:
+        break
+sensor_power.close()
+
